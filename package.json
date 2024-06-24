@@ -1,7 +1,0 @@
-{
-  "private": true,
-  "scripts": {
-    "start": "npx wrangler dev index.js --assets public",
-    "deploy": "npx wrangler deploy"
-  }
-}
