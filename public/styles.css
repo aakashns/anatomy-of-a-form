@@ -1,0 +1,44 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: sans-serif;
+}
+
+#settings-form {
+  margin: 0 auto;
+  padding: 1.5rem 1rem;
+  max-width: 24rem;
+}
+
+#settings-form fieldset {
+  border: 0;
+}
+
+#settings-form label {
+  display: block;
+  margin-top: 1rem;
+  font-size: 0.875rem;
+  color: rgb(0 0 0 / 80%);
+  font-weight: 600;
+}
+
+#settings-form input,
+#settings-form textarea {
+  font-size: 1rem;
+  margin-top: 0.25rem;
+  padding: 0.375rem;
+  outline: none;
+  border: 1px solid rgb(0 0 0 / 30%);
+  border-radius: 0.25rem;
+  width: 100%;
+  font-family: sans-serif;
+}
+
+#settings-form input[type="submit"] {
+  width: 10rem;
+  margin-top: 1rem;
+}

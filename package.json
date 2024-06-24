@@ -1,7 +1,7 @@
 {
   "private": true,
   "scripts": {
-    "start": "npx wrangler dev src/index.js --compatibility-date 2024-06-14 --compatibility-flag nodejs_compat",
+    "start": "npx wrangler dev index.js --assets public",
     "deploy": "npx wrangler deploy"
   }
 }
