@@ -1,16 +1,6 @@
 const http = require("node:http");
 const fs = require("node:fs");
 
-// Replace characters that disturb the HTML layout
-function escapeHtml(unsafeValue) {
-  return unsafeValue
-    .replace("&", "&amp;")
-    .replace("<", "&lt;")
-    .replace(">", "&gt;")
-    .replace('"', "&quot;")
-    .replace("'", "&#039;");
-}
-
 function renderFullNameField(fullNameValue) {
   return `
     <label>
@@ -31,11 +21,11 @@ function renderEmailField(emailValue) {
   return `
     <label>
       <div>Email</div>
-      <input 
-        type="email" 
-        name="email" 
-        readonly 
-        value="${escapeHtml(emailValue)}" 
+      <input
+        type="email"
+        name="email"
+        readonly
+        value="${escapeHtml(emailValue)}"
       />
     </label>
   `;
@@ -46,26 +36,35 @@ function renderAvatarField(avatarUrl) {
     <label>
       <div>Avatar Image</div>
       <img src="${escapeHtml(avatarUrl)}" class="avatar-image" height="80">
-      <input 
-        type="file" 
-        name="avatarFile" 
-        accept="image/jpeg, image/png" 
+      <input
+        type="file"
+        name="avatarFile"
+        accept="image/jpeg, image/png"
       />
     </label>
   `;
 }
 
-function renderBioField(value = "") {
+function renderBioField(bioValue = "") {
   return `
     <label>
       <div>Bio</div>
-      <textarea 
-        name="bio" 
+      <textarea
+        name="bio"
         placeholder="Add a bio"
         maxlength="1000"
-        rows="3"
-      >${escapeHtml(value)}</textarea>
+      >${escapeHtml(bioValue)}</textarea>
     </label>`;
+}
+
+// Replace characters that disturb the HTML layout
+function escapeHtml(unsafeValue) {
+  return unsafeValue
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 }
 
 function renderForm() {
@@ -113,7 +112,7 @@ function handleRequest(req, res) {
     res.writeHead(200, { "Content-Type": "text/html" });
     res.write(renderHtmlPage());
   } else if (req.url === "/styles.css") {
-    // Respond with CSS styles
+    // Respond with a CSS file
     res.writeHead(200, { "Content-Type": "text/css" });
     if (fs.existsSync("styles.css")) res.write(fs.readFileSync("styles.css"));
   } else if (req.url === "/script.js") {
@@ -128,5 +127,5 @@ function handleRequest(req, res) {
   res.end();
 }
 
-// Create server and listed on port 8080
+// Create server and listen on port 8080
 http.createServer(handleRequest).listen(8080);
