@@ -1,8 +1,9 @@
 const http = require("node:http");
 const fs = require("node:fs");
 
-function escapeHtml(unsafe) {
-  return unsafe
+// Replace characters that disturb the HTML layout
+function escapeHtml(unsafeValue) {
+  return unsafeValue
     .replace("&", "&amp;")
     .replace("<", "&lt;")
     .replace(">", "&gt;")
@@ -10,44 +11,45 @@ function escapeHtml(unsafe) {
     .replace("'", "&#039;");
 }
 
-function renderFullNameField(value) {
+function renderFullNameField(fullNameValue) {
   return `
     <label>
       <div>Full Name</div>
       <input
-        name="full_name"
         type="text"
-        placeholder="John"
+        name="fullName"
+        placeholder="Enter full name"
         required
         maxlength="64"
-        value="${escapeHtml(value)}"
+        value="${escapeHtml(fullNameValue)}"
       />
     </label>
   `;
 }
 
-function renderEmailField(value = "") {
+function renderEmailField(emailValue) {
   return `
     <label>
       <div>Email</div>
-      <input
-        name="email"
-        type="email"
-        value="${escapeHtml(value)}"
-        readonly
+      <input 
+        type="email" 
+        name="email" 
+        readonly 
+        value="${escapeHtml(emailValue)}" 
       />
     </label>
   `;
 }
 
-function renderAvatarField(value = "") {
+function renderAvatarField(avatarUrl) {
   return `
     <label>
-      <div>Avatar</div>
-      <img src="${escapeHtml(value)}" class="avatar-preview" height="80">
-      <input
-        name="avatar_file"
-        type="file"
+      <div>Avatar Image</div>
+      <img src="${escapeHtml(avatarUrl)}" class="avatar-image" height="80">
+      <input 
+        type="file" 
+        name="avatarFile" 
+        accept="image/jpeg, image/png" 
       />
     </label>
   `;
@@ -57,31 +59,33 @@ function renderBioField(value = "") {
   return `
     <label>
       <div>Bio</div>
-      <textarea
+      <textarea 
         name="bio" 
-        placeholder="Enter your bio here"
+        placeholder="Add a bio"
+        maxlength="1000"
         rows="3"
       >${escapeHtml(value)}</textarea>
-    </label>
-  `;
+    </label>`;
 }
 
-function renderForm(req) {
+function renderForm() {
+  // Read existing values from "data.json"
   const initialValues = JSON.parse(fs.readFileSync("./data.json"));
+
   return `
-    <form id="settings-form" method="post" enctype="multipart/form-data" action="/">
-      <fieldset>
-        ${renderFullNameField(initialValues.fullName)}
-        ${renderEmailField(initialValues.email)}
-        ${renderAvatarField(initialValues.avatarUrl)}
-        ${renderBioField(initialValues.bio)}
-      </fieldset>
-      <input type="submit" value="Save Settings" />
-    </form>
-  `;
+      <form id="settings-form" method="post" enctype="multipart/form-data" action="/">
+        <fieldset>
+          ${renderFullNameField(initialValues.fullName)}
+          ${renderEmailField(initialValues.email)}
+          ${renderAvatarField(initialValues.avatarUrl)}
+          ${renderBioField(initialValues.bio)}
+        </fieldset>
+        <input type="submit" value="Save Settings" />
+      </form>
+    `;
 }
 
-function renderHtmlPage(req) {
+function renderHtmlPage() {
   return `
     <!DOCTYPE html>
     <html lang="en-US">
@@ -95,7 +99,7 @@ function renderHtmlPage(req) {
       <body>
         <div id="container">
           <h1>Account Settings</h1>
-          ${renderForm(req)}
+          ${renderForm()}
         </div>
       </body>
     </html>
@@ -105,19 +109,24 @@ function renderHtmlPage(req) {
 function handleRequest(req, res) {
   console.log(req.method, " ", req.url);
   if (req.url === "/") {
+    // Respond with an HTML page
     res.writeHead(200, { "Content-Type": "text/html" });
-    res.write(renderHtmlPage(req));
+    res.write(renderHtmlPage());
   } else if (req.url === "/styles.css") {
+    // Respond with CSS styles
     res.writeHead(200, { "Content-Type": "text/css" });
     if (fs.existsSync("styles.css")) res.write(fs.readFileSync("styles.css"));
   } else if (req.url === "/script.js") {
+    // Respond with a JavaScript file
     res.writeHead(200, { "Content-Type": "text/javascript" });
     if (fs.existsSync("script.js")) res.write(fs.readFileSync("script.js"));
   } else {
+    // Reject all other URLs
     res.writeHead(404);
     res.write("Not Found");
   }
   res.end();
 }
 
+// Create server and listed on port 8080
 http.createServer(handleRequest).listen(8080);

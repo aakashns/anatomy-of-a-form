@@ -1,7 +1,3 @@
 # Anatomy of a Form
 
-Run the code using:
-
-```
-node index.js
-```
+Source code for the blog post "Anatomy of a Form".
